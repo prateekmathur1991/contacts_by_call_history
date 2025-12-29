@@ -10,24 +10,35 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Contacts with Call History')),
       body: FutureBuilder(
-        future: requestPermission(),
+        future: fetchContacts(),
         builder:
-            (BuildContext context, AsyncSnapshot<PermissionStatus> snapshot) {
+            (BuildContext context, AsyncSnapshot<List<Contact>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return Center(child: const CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
+                return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.hasData) {
-                return Center(child: Text('Result: ${snapshot.data}'));
+                final contacts = snapshot.data ?? [];
+                return ListView.builder(
+                  itemCount: contacts.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(title: Text(contacts[index].displayName));
+                  }
+                );
               } else {
-                return const Text('No data found.');
+                return Center(child: const Text('No data found.'));
               }
             },
       ),
     );
   }
 
-  Future<PermissionStatus> requestPermission() async {
-    return await Permission.contacts.request();
+  Future<List<Contact>> fetchContacts() async {
+    PermissionStatus permissionStatus = await Permission.contacts.request();
+    if (permissionStatus.isDenied || permissionStatus.isRestricted) {
+      throw Exception('Contacts permission denied or restricted');
+    }
+
+    return await FlutterContacts.getContacts();
   }
 }
