@@ -36,6 +36,7 @@ dependencies:
   permission_handler: ^12.0.1
   flutter_contacts: ^1.1.9+2
   flutter_launcher_icons: ^0.14.4
+  dlibphonenumber: ^1.1.54
 
 dev_dependencies:
   flutter_test:
