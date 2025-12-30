@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:call_log/call_log.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -34,8 +35,8 @@ class HomePage extends StatelessWidget {
   }
 
   Future<List<Contact>> fetchContacts() async {
-    PermissionStatus permissionStatus = await Permission.contacts.request();
-    if (permissionStatus.isDenied || permissionStatus.isRestricted) {
+    PermissionStatus readContactsPermissionStatus = await Permission.contacts.request();
+    if (readContactsPermissionStatus.isDenied || readContactsPermissionStatus.isRestricted) {
       throw Exception('Contacts permission denied or restricted');
     }
 
