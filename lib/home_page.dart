@@ -75,7 +75,7 @@ class HomePage extends StatelessWidget {
         final callLogNumberInstance = phoneUtilInstance.parse(log.number, 'IN');
         final number = phoneUtilInstance.format(callLogNumberInstance, PhoneNumberFormat.e164);
         callCountMap[number] = (callCountMap[number] ?? 0) + 1;
-      } on NumberParseException catch (e) {
+      } on NumberParseException {
         // The dlibphonenumber package failed to parse the number
       }
     }
@@ -90,7 +90,7 @@ class HomePage extends StatelessWidget {
           final phoneNumberInstance = phoneUtilInstance.parse(phone.number, 'IN');
           final number = phoneUtilInstance.format(phoneNumberInstance, PhoneNumberFormat.e164);
           totalCalls += callCountMap[number] ?? 0;
-        } on NumberParseException catch (e) {
+        } on NumberParseException {
           // The dlibphonenumber package failed to parse the number
         }
       }
