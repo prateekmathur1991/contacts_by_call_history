@@ -14,6 +14,15 @@ class ContactHistoryWrapper {
   });
 }
 
+enum SortOption {
+  leastUsed('Least Used'),
+  mostUsed('Most Used'),
+  alphabetical('Alphabetical');
+
+  final String label;
+  const SortOption(this.label);
+}
+
 Future<List<Contact>> fetchContacts() async {
   PermissionStatus readContactsPermissionStatus = await Permission.contacts
       .request();
@@ -75,9 +84,6 @@ Future<List<ContactHistoryWrapper>> fetchContactsWithCallHistory() async {
       ContactHistoryWrapper(contact: contact, callCount: totalCalls),
     );
   }
-
-  // Sort by call count ascending (least used first)
-  contactHistoryList.sort((a, b) => a.callCount.compareTo(b.callCount));
 
   return contactHistoryList;
 }

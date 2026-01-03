@@ -17,3 +17,7 @@ To build the app from source -
 To install the pre-built APK -
 
 1. Download the latest version from the releases pages of this repository
+
+#### Note about iOS Support
+
+Apple does not allow iOS apps to read the device's call logs programatically. Hence, this app unfortunately cannot work on iOS devices.
