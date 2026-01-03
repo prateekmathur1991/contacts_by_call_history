@@ -1,9 +1,5 @@
-import 'package:contacts_by_call_history/contact_history_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:call_log/call_log.dart';
-import 'package:dlibphonenumber/dlibphonenumber.dart';
+import 'package:contacts_by_call_history/fetch_data.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -44,62 +40,5 @@ class HomePage extends StatelessWidget {
             },
       ),
     );
-  }
-
-  Future<List<Contact>> fetchContacts() async {
-    PermissionStatus readContactsPermissionStatus = await Permission.contacts.request();
-    if (readContactsPermissionStatus.isDenied || readContactsPermissionStatus.isRestricted) {
-      throw Exception('Contacts permission denied or restricted');
-    }
-
-    return await FlutterContacts.getContacts(withProperties: true, withPhoto: true);
-  }
-
-  Future<Iterable<CallLogEntry>> fetchCallLogs() async {
-    return await CallLog.get();
-  }
-
-
-  Future<List<ContactHistoryWrapper>> fetchContactsWithCallHistory() async {
-
-    final contacts = await fetchContacts();
-    final callLogs = await fetchCallLogs();
-
-    final PhoneNumberUtil phoneUtilInstance = PhoneNumberUtil.instance;
-
-    // Map to store call counts by phone number
-    final Map<String, int> callCountMap = {};
-
-    for (var log in callLogs) {
-      try {
-        final callLogNumberInstance = phoneUtilInstance.parse(log.number, 'IN');
-        final number = phoneUtilInstance.format(callLogNumberInstance, PhoneNumberFormat.e164);
-        callCountMap[number] = (callCountMap[number] ?? 0) + 1;
-      } on NumberParseException {
-        // The dlibphonenumber package failed to parse the number
-      }
-    }
-
-    // Create a list of ContactHistoryWrapper
-    final List<ContactHistoryWrapper> contactHistoryList = [];
-
-    for (var contact in contacts) {
-      int totalCalls = 0;
-      for (var phone in contact.phones) {
-        try {
-          final phoneNumberInstance = phoneUtilInstance.parse(phone.number, 'IN');
-          final number = phoneUtilInstance.format(phoneNumberInstance, PhoneNumberFormat.e164);
-          totalCalls += callCountMap[number] ?? 0;
-        } on NumberParseException {
-          // The dlibphonenumber package failed to parse the number
-        }
-      }
-      contactHistoryList.add(ContactHistoryWrapper(contact: contact, callCount: totalCalls));
-    }
-
-    // Sort by call count ascending (least used first)
-    contactHistoryList.sort((a, b) => a.callCount.compareTo(b.callCount));
-
-    return contactHistoryList;
   }
 }
