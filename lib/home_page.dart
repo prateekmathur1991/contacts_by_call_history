@@ -27,9 +27,9 @@ class _HomePageState extends State<HomePage> {
         _isLoading = true;
         _error = null;
       });
-      final contacts = await fetchContactsWithCallHistory();
+      _contacts = await fetchContactsWithCallHistory();
+      _sortContacts();
       setState(() {
-        _contacts = contacts;
         _isLoading = false;
       });
     } catch (e) {
